@@ -3,11 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Document</title>
+    <title>Password Strength Check</title>
     <link href="/src/output.css" rel="stylesheet">
+    <style>
+        /* Add this style to change the content when the hide class is applied */
+        #show.hide::before {
+            content: 'HIDE';
+        }
+        
+        #container.weak #strengthMeter::before {
+            width: 10%;
+            background: #f00;
+            filter: drop-shadow(0 0 5px #F00) drop-shadow(0 8px 10px #f00) drop-shadow(0 0 20px #f00);
+        }
+        #container.medium #strengthMeter::before {
+            width: 66.66%;
+            background: #e69224;
+            filter: drop-shadow(0 0 5px #e69224) drop-shadow(0 8px 10px #e69224) drop-shadow(0 0 20px #e69224);
+        }
+
+        #container.strong #strengthMeter::before {
+            width: 100%;
+            background: #029633;
+            filter: drop-shadow(0 0 5px #029633) drop-shadow(0 8px 10px #029633) drop-shadow(0 0 20px #029633);
+        }
+        #container #strengthMeter::after {
+            position: absolute;
+            top: -45px;
+            left: 30px;
+            color: white;
+            transition: 0.5s;
+        }
+        #container.weak #strengthMeter::after {
+    content: "Your Password is Weak";
+    color: #f82525;
+    filter: drop-shadow(0 0 5px #f82525);
+    font-size: 1.2rem; /* Adjust size as needed */
+}
+
+#container.medium #strengthMeter::after {
+    content: "Your Password is Medium";
+    color: #e69224;
+    filter: drop-shadow(0 0 5px #e69224);
+    font-size: 1.2rem; /* Adjust size as needed */
+}
+
+#container.strong #strengthMeter::after {
+    content: "Your Password is Secured";
+    color: #029633;
+    filter: drop-shadow(0 0 5px #029633);
+    font-size: 1.2rem; /* Adjust size as needed */
+}
+
+    </style>
 </head>
-<body>
-    <h1 class="text-7xl">hiii</h1>
+<body class="m-0 p-0 box-border font-sans flex flex-col justify-center items-center min-h-screen bg-gray-900">
+    <div id="container" class="p-8 relative text-blue-50 w-120 bg-gray-700 flex flex-col justify-center border-2 border-black gap-6 pb-22 shadow-2xl rounded-lg shadow-gray-500/50">
+        <h2 class="text-3xl font-bold text-cyan-600">
+            Password Strength Check
+        </h2>
+          
+        <div class="relative w-full">
+            <input class="relative w-full bg-black border-0 outline-0 p-2.5 text-white text-lg" type="password" placeholder="Enter Password" id="mypass">
+            <div class="absolute top-0 right-0 w-14 h-full bg-gray-700 border-6 border-solid border-black cursor-pointer flex justify-center items-center before:content-['SHOW'] before:text-xs before:text-white before:tracking-wider" id="show">
+            </div>
+        </div>
+        <div class="absolute bottom-0 left-0 w-full h-1 bg-black before:content-[''] before:absolute before:w-0 before:h-full before:transition-[0.5s] before:bg-red-600" id="strengthMeter">
+        </div>
+    </div>
+    <script>
+        function checkStrength(password) {
+            let i = 0;
+            if(password.length > 6) {
+                i++;
+            }
+            if(password.length >= 10) {
+                i++;
+            }
+            if(/[A-Z]/.test(password)) {
+                i++;
+            }
+            if(/[0-9]/.test(password)) {
+                i++;
+            }
+            if(/[^A-Za-z0-9]/.test(password)) {
+                i++;
+            }
+            return i;
+        }
+
+        let pswrd = document.querySelector('#mypass');
+        let show = document.querySelector('#show');
+        let container = document.querySelector('#container');
+        
+        show.onclick = function() {
+            if(pswrd.type === 'password') {
+                pswrd.setAttribute('type', 'text');
+                show.classList.add('hide');
+            } else {
+                pswrd.setAttribute('type', 'password');
+                show.classList.remove('hide');
+            }
+        }
+        
+        document.addEventListener("keyup", function(e) {
+            let password = document.querySelector('#mypass').value;
+            let strength = checkStrength(password);
+            
+            if(strength <= 2) {
+                container.classList.add('weak');
+                container.classList.remove('medium');
+                container.classList.remove('strong');
+            }
+            else if(strength > 2 && strength <= 4) {
+                container.classList.remove('weak');
+                container.classList.add('medium');
+                container.classList.remove('strong');
+            }
+            else {
+                container.classList.remove('weak');
+                container.classList.remove('medium');
+                container.classList.add('strong');
+            }
+        });
+    </script>
 </body>
 </html>
